@@ -26,8 +26,8 @@ def get_model():
     return model
 
 
-def predict(self, img):
-    a = TensorImage(img).movedim(-1, 0)
+def predict(self, img, device='cpu'):
+    a = TensorImage(img).to(device).movedim(-1, 0)
     a = self.tfms(a)
 
     with no_grad():

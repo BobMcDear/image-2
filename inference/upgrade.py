@@ -55,8 +55,8 @@ def upgrade(model, img, enhancement_level=2, enlarge=True):
     return res
 
 
-def compare(img, enhancement_level=3, enlarge=True):
-    model = load_model('models/model.pt')
+def compare(img, enhancement_level=3, enlarge=True, device='cpu'):
+    model = load_model('models/model.pt').to(device)
     res = upgrade(model, img, enhancement_level=enhancement_level,
                   enlarge=enlarge)
     new_sz = res.size

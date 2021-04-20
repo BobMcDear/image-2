@@ -18,6 +18,7 @@ def index():
 @app.route('/', methods=['POST'])
 def upload():
     img, enhancement_level, enlarge = get_input()
+    device = 'cpu'
 
     if img == 'extention':
         flash('File has to be .jpg, .jpeg, or .png')
@@ -27,7 +28,7 @@ def upload():
         flash('Maximum dimension of image must be under 768')
         return redirect(url_for('index'))
     
-    res, img = compare(img, enhancement_level, enlarge)
+    res, img = compare(img, enhancement_level, enlarge, device)
     collect()
     res = img_to_b64(res)
     img = img_to_b64(img)
