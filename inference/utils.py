@@ -6,6 +6,7 @@ from PIL import Image
 
 
 def torch_to_np(a):
+    a = a.to('cpu')
     a = array(a)
     a = moveaxis(a, 0, -1)
     a = uint8(a)
