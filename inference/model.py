@@ -34,7 +34,7 @@ def predict(self, img, device='cpu'):
         a = self(a)
 
     a = self.tfms.decode(a)
-    a.squeeze_(0)
+    a.squeeze_(0).cpu()
 
     img = torch_to_img(a)
     return img
