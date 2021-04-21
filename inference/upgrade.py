@@ -46,8 +46,8 @@ def find_scale_factor(img, enlarge=True):
     return scale_factor
 
 
-def upgrade(model, img, enhancement_level=2, 
-            enlarge=True, device='cpu'):
+def upgrade(model, img, enhancement_level=3, 
+            enlarge=True, device='cuda'):
     scale_factor = find_scale_factor(img, enlarge)
     enhance_first = ((3 <= enhancement_level) and (3.4 < scale_factor))
 
@@ -58,8 +58,8 @@ def upgrade(model, img, enhancement_level=2,
     return res
 
 
-def compare(img, enhancement_level=3, enlarge=True, device='cpu'):
-    model = load_model('models/model.pt').to(device)
+def compare(model, img, enhancement_level=3, 
+            enlarge=True, device='cuda'):
     res = upgrade(model, img, enhancement_level=enhancement_level,
                   enlarge=enlarge, device=device)
     new_sz = res.size
