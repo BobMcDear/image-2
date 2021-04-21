@@ -3,11 +3,14 @@ from gc import collect
 from flask import flash, Flask, redirect, render_template, url_for
 
 from get_input import get_input
+from model import load_model
 from upgrade import compare
 from utils import img_to_b64
 
 
 app = Flask(__name__)
+device = 'cuda'
+model = load_model().to(device)
 
 
 @app.route('/')
@@ -18,7 +21,6 @@ def index():
 @app.route('/', methods=['POST'])
 def upload():
     img, enhancement_level, enlarge = get_input()
-    device = 'cpu'
 
     if img == 'extention':
         flash('File has to be .jpg, .jpeg, or .png')
@@ -28,7 +30,8 @@ def upload():
         flash('Maximum dimension of image must be under 768')
         return redirect(url_for('index'))
     
-    res, img = compare(img, enhancement_level, enlarge, device)
+    res, img = compare(model, img, enhancement_level, 
+                       enlarge, device)
     collect()
     res = img_to_b64(res)
     img = img_to_b64(img)
