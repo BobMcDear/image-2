@@ -4,18 +4,19 @@ from model import load_model
 
 
 def predict(model, img, scale_factor=2,
-            enhancement_level=2, enhance_first=False):
+            enhancement_level=2, enhance_first=False,
+            device='cpu'):
     f = scale_factor ** (1 / enhancement_level)
     res = img
 
     if enhance_first:
-        res = model.predict(res)
+        res = model.predict(res, device)
 
     for _ in range(enhancement_level):
         w, h = res.size
         new_sz = (int(f * w), int(f * h))
         res = res.resize(new_sz, Image.LANCZOS)
-        res = model.predict(res)
+        res = model.predict(res, device)
 
     return res
 
@@ -45,12 +46,14 @@ def find_scale_factor(img, enlarge=True):
     return scale_factor
 
 
-def upgrade(model, img, enhancement_level=2, enlarge=True):
+def upgrade(model, img, enhancement_level=2, 
+            enlarge=True, device='cpu'):
     scale_factor = find_scale_factor(img, enlarge)
     enhance_first = ((3 <= enhancement_level) and (3.4 < scale_factor))
 
     res = predict(model, img, scale_factor,
-                  enhancement_level, enhance_first)
+                  enhancement_level, enhance_first,
+                  device)
 
     return res
 
@@ -58,7 +61,7 @@ def upgrade(model, img, enhancement_level=2, enlarge=True):
 def compare(img, enhancement_level=3, enlarge=True, device='cpu'):
     model = load_model('models/model.pt').to(device)
     res = upgrade(model, img, enhancement_level=enhancement_level,
-                  enlarge=enlarge)
+                  enlarge=enlarge, device=device)
     new_sz = res.size
     img = img.resize(new_sz, Image.LANCZOS)
     return res, img
