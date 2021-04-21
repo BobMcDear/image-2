@@ -26,7 +26,7 @@ def get_model():
     return model
 
 
-def predict(self, img, device='cpu'):
+def predict(self, img, device='cuda'):
     a = TensorImage(img).to(device).movedim(-1, 0)
     a = self.tfms(a)
 
@@ -34,7 +34,7 @@ def predict(self, img, device='cpu'):
         a = self(a)
 
     a = self.tfms.decode(a)
-    a.squeeze_(0).cpu()
+    a.squeeze_(0)
 
     img = torch_to_img(a)
     return img
