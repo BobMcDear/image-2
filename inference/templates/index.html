@@ -33,9 +33,51 @@ div.container {
 	{% endif %}
 {% endwith %}
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.min.css'>
+
 <h1 class="header">Upload Your Image</h1>
 <form method="post" action="/" enctype="multipart/form-data">
-	<input class="setting" type="file" name="file" autocomplete="off" required>
+	<input class="setting" type="file" name="file" id="file" required>
+
+
+
+		<div class="result"></div>
+		<div class="options">
+		</div>
+		<button class="save">Save</button>
+
+
+
+<script>
+let result = document.querySelector('.result'),
+options = document.querySelector('.options'),
+save = document.querySelector('.save'),
+upload = document.querySelector('#file'),
+cropper = '';
+
+upload.addEventListener('change', e => {
+  if (e.target.files.length) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      if (e.target.result) {
+        let img = document.createElement('img');
+        img.id = 'image';
+        img.src = e.target.result;
+        result.innerHTML = '';
+        result.appendChild(img);
+        cropper = new Cropper(img);
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  }
+});
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.js'></script>
+
+
+
+
 
 	<p>
 		<label class="setting">Enhancement level:</label>
