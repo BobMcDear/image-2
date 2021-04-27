@@ -17,7 +17,6 @@ body {
 }
 
 div.container {
-	display: inline-block;
 	font-weight: 800;
 }
 
@@ -67,6 +66,7 @@ div.container {
 <p>
     <input type='button' value='Upgrade' id='upgrade'>
 </p>
+<br>
 
 <script>
     let file = document.getElementsByName('file')[0],
@@ -111,7 +111,7 @@ div.container {
     };
     function crop_submit(){
         crop();
-        setTimeout(submit, 50);
+        setTimeout(submit, 200);
     };
     upgrade.addEventListener('click', crop_submit);
 </script>
@@ -120,13 +120,15 @@ div.container {
 <div class='container'>
     {% if img %}
         <p>Original</p>
-        <img src='data:image/jpeg;base64,{{ img }}' alt='Original'>
+        <img src='data:image/jpeg;base64,{{ img }}'>
     {% endif %}
 </div>
+
+<br>
 
 <div class='container'>
     {% if res %}
         <p>Upgraded</p>
-        <img src='data:image/jpeg;base64,{{ res }}' alt='Upgraded'>
+        <img src='data:image/jpeg;base64,{{ res }}'>
     {% endif %}
 </div>
