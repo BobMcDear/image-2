@@ -10,6 +10,12 @@ body {
 	text-align-last: center;
 }
 
+.canvas {
+    margin: auto;
+    max-height: 1024px;
+    max-width: 1024px;
+}
+
 div.container {
 	display: inline-block;
 	font-weight: 800;
@@ -23,32 +29,21 @@ div.container {
 .setting {
 	font-weight: 400;
 }
-
-.zoo {
-    background-color: #072c66;
-}
 </style>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <script>
-				let message = '{{ message }}';
-				alert(message);
-			</script>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css'>
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.min.css'>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js'></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css'>
 
 <h1 class='header'>Image 2.0</h1>
 
-<form method='post' action='/' enctype='multipart/form-data'>
-    <input class='setting' type='file' name='upload' required>
+<form method='post' action='/' enctype='multipart/form-data' id='form'>
+    <input class='setting' type='file' name='file' required>
 
-    <div class='zoo' id='canvas'></div>
+    <p>
+    <div class='canvas'></div>
+    </p>
 
     <p>
         <label class='setting'>Enhancement level:</label>
@@ -67,16 +62,15 @@ div.container {
             <span class='setting'>Enlarge</span>
         </label>
     </p>
-
-    <p>
-        <input type='submit' value='Upgrade' id='upgrade'>
-    </p>
 </form>
 
-<script src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js'></script>
+<p>
+    <input type='button' value='Upgrade' id='upgrade'>
+</p>
+
 <script>
-    let upload = document.getElementsByName('upload')[0],
-    canvas = document.getElementById('canvas'),
+    let file = document.getElementsByName('file')[0],
+    canvas = document.getElementsByClassName('canvas')[0],
     upgrade = document.getElementById('upgrade');
 
     function create_cropper(evt){
@@ -90,26 +84,36 @@ div.container {
                     canvas.innerHTML = '';
                     canvas.appendChild(img);
                     cropper = new Cropper(img, {
-                        background: false
+                        autoCropArea: 1,
+                        viewMode: 1,
+                        zoomable: false
                     });
                 };
             };
             reader.readAsDataURL(evt.target.files[0]);
         };
     };
-    upload.addEventListener('change', create_cropper);
+    file.addEventListener('change', create_cropper);
 
-    function crop(){
+
+    function crop(){        
         cropper.getCroppedCanvas().toBlob((blob) => {
-            const name = upload.files[0].name;
+            const name = file.files[0].name;
             cropped = new File([blob], name);
 
             let container = new DataTransfer();
             container.items.add(cropped);
-            upload.files = container.files;
+            file.files = container.files;
         });
     };
-    upgrade.addEventListener('click', crop);
+    function submit(){
+        document.getElementById('form').submit();
+    };
+    function crop_submit(){
+        crop();
+        setTimeout(submit, 50);
+    };
+    upgrade.addEventListener('click', crop_submit);
 </script>
 
 
