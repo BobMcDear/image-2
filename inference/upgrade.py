@@ -1,7 +1,5 @@
 from PIL import Image
 
-from model import load_model
-
 
 def predict(model, img, scale_factor=2,
             enhancement_level=2, enhance_first=False,

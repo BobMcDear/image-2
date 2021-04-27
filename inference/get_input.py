@@ -20,6 +20,8 @@ def verify_size(img):
 
 
 def get_input():
+    print(request.files)
+    print(request.form)
     f = request.files['file']
     if not verify_extension(f):
         return 'extension', None, None

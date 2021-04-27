@@ -6,107 +6,123 @@
 body {
 	background-color: #14151b;
 	color: #072c66;
-	font-family: "Helvetica";
+	font-family: 'Helvetica';
 	text-align-last: center;
 }
+
 div.container {
-	display:inline-block;
+	display: inline-block;
 	font-weight: 800;
 }
+
 .header {
-	font-size:40px;
+	font-size: 40px;
 	font-weight: 1000;
 }
+
 .setting {
 	font-weight: 400;
+}
+
+.zoo {
+    background-color: #072c66;
 }
 </style>
 
 {% with messages = get_flashed_messages() %}
-	{% if messages %}
-		{% for message in messages %}
-			<script>
-				var message = '{{ message }}';
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+				let message = '{{ message }}';
 				alert(message);
 			</script>
-		{% endfor %}
-	{% endif %}
+        {% endfor %}
+    {% endif %}
 {% endwith %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css'>
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/cropper/2.3.4/cropper.min.css'>
 
-<h1 class="header">Upload Your Image</h1>
-<form method="post" action="/" enctype="multipart/form-data">
-	<input class="setting" type="file" name="file" id="file" required>
+<h1 class='header'>Image 2.0</h1>
 
+<form method='post' action='/' enctype='multipart/form-data'>
+    <input class='setting' type='file' name='upload' required>
 
-
-		<div class="result"></div>
-
-
-
-<script>
-let result = document.querySelector('.result'),
-upload = document.querySelector('#file'),
-cropper = '';
-
-upload.addEventListener('change', e => {
-  if (e.target.files.length) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      if (e.target.result) {
-        let img = document.createElement('img');
-        img.id = 'image';
-        img.src = e.target.result;
-        result.innerHTML = '';
-        result.appendChild(img);
-        cropper = new Cropper(img);
-      }
-    };
-    reader.readAsDataURL(e.target.files[0]);
-  }
-});
-</script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.js'></script>
-
-
-
-
-
-	<p>
-		<label class="setting">Enhancement level:</label>
-		<select name="enhancement_level">
-		<option value =1>1 (Very low)</option>
-		<option value =2>2</option>
-		<option value =3 selected="selected">3</option>
-		<option value =4>4</option>
-		<option value =5>5 (Very high)</option>
-		</select> 
-	</p>
-
-	<p>
-		<label>
-			<input type="checkbox" checked="checked" name="enlarge" />
-			<span class="setting">Enlarge</span>
-		</label>
-	</p>
+    <div class='zoo' id='canvas'></div>
 
     <p>
-		<input type="submit" value="Upgrade">
-	</p>
+        <label class='setting'>Enhancement level:</label>
+        <select name='enhancement_level'>
+            <option value=1>1 (Very low)</option>
+            <option value=2>2</option>
+            <option value=3 selected='selected'>3</option>
+            <option value=4>4</option>
+            <option value=5>5 (Very high)</option>
+        </select>
+    </p>
+
+    <p>
+        <label>
+            <input type='checkbox' checked='checked' name='enlarge'>
+            <span class='setting'>Enlarge</span>
+        </label>
+    </p>
+
+    <p>
+        <input type='submit' value='Upgrade' id='upgrade'>
+    </p>
 </form>
 
-<div class="container">
-	{% if img %}
-		<p>Original</p>
-		<img src="data:image/jpeg;base64,{{ img }}" alt="Original">
-	{% endif %}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.8.1/cropper.min.js'></script>
+<script>
+    let upload = document.getElementsByName('upload')[0],
+    canvas = document.getElementById('canvas'),
+    upgrade = document.getElementById('upgrade');
+
+    function create_cropper(evt){
+        if (evt.target.files.length) {
+            const reader = new FileReader();
+            reader.onload = create_cropper => {
+                if (create_cropper.target.result){
+                    let img = document.createElement('img');
+                    img.id = 'image';
+                    img.src = create_cropper.target.result;
+                    canvas.innerHTML = '';
+                    canvas.appendChild(img);
+                    cropper = new Cropper(img, {
+                        background: false
+                    });
+                };
+            };
+            reader.readAsDataURL(evt.target.files[0]);
+        };
+    };
+    upload.addEventListener('change', create_cropper);
+
+    function crop(){
+        cropper.getCroppedCanvas().toBlob((blob) => {
+            const name = upload.files[0].name;
+            cropped = new File([blob], name);
+
+            let container = new DataTransfer();
+            container.items.add(cropped);
+            upload.files = container.files;
+        });
+    };
+    upgrade.addEventListener('click', crop);
+</script>
+
+
+<div class='container'>
+    {% if img %}
+        <p>Original</p>
+        <img src='data:image/jpeg;base64,{{ img }}' alt='Original'>
+    {% endif %}
 </div>
 
-<div class="container">
-	{% if res %}
-		<p>Upgraded</p>
-		<img src="data:image/jpeg;base64,{{ res }}" alt="Upgraded">
-	{% endif %}
+<div class='container'>
+    {% if res %}
+        <p>Upgraded</p>
+        <img src='data:image/jpeg;base64,{{ res }}' alt='Upgraded'>
+    {% endif %}
 </div>
