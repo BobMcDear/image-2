@@ -20,7 +20,7 @@ def resnet_split(m):
 
 
 def get_arch(model_name='swsl_resnet18'):
-    arch = partial(create_model), model_name)
+    arch = partial(create_model, model_name)
     cut = None
     stats = None
     resnet_meta = {'cut': cut,
