@@ -47,7 +47,7 @@ def find_scale_factor(img, enlarge=True):
 def upgrade(model, img, enhancement_level=3, 
             enlarge=True, device='cuda'):
     scale_factor = find_scale_factor(img, enlarge)
-    enhance_first = ((3 <= enhancement_level) and (3.4 < scale_factor))
+    enhance_first = ((3 <= enhancement_level) and (3 <= scale_factor))
 
     res = predict(model, img, scale_factor,
                   enhancement_level, enhance_first,
