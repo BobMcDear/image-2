@@ -27,16 +27,16 @@ def find_scale_factor(img, enlarge=True):
         scale_factor = 1
 
     elif mn < 100:
-        scale_factor = 3.5
+        scale_factor = 4
     
     elif mn < 160:
-        scale_factor = 3
+        scale_factor = 3.3
     
     elif mn < 200:
-        scale_factor = 2.5
+        scale_factor = 2.7
 
     elif mn < 256:
-        scale_factor = 2
+        scale_factor = 2.2
 
     else:
         scale_factor = min(512/w, 512/h)
