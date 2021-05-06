@@ -1,6 +1,6 @@
 from gc import collect
 
-from flask import flash, Flask, redirect, render_template, url_for
+from flask import Flask, render_template
 from torch import cuda
 
 from get_input import get_input
