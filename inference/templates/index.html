@@ -91,7 +91,7 @@ div.container {
             canvas.appendChild(img);
             cropper = new Cropper(img, {
                 autoCropArea: 1,
-                viewMode: 1,
+                viewMode: 1
             });
         };
         reader.readAsDataURL(evt.target.files[0]);
@@ -127,7 +127,7 @@ div.container {
     function crop_submit(){
         const f = crop();
         if (f){
-            setTimeout(submit, 200);
+            setTimeout(submit, 1000);
         };
     };
     upgrade.addEventListener('click', crop_submit);
