@@ -7,7 +7,7 @@ body {
 	background-color: #14151b;
 	color: #072c66;
 	font-family: 'Helvetica';
-	text-align-last: center;
+	text-align: center;
 }
 
 .canvas {
@@ -38,7 +38,7 @@ div.container {
 <h1 class='header'>Image 2.0</h1>
 
 <form method='post' action='/' enctype='multipart/form-data' id='form'>
-    <input class='setting' type='file' name='file' required>
+    <input class='setting' type='file' name='file' style="margin-left: 110px" accept='image/*' required>
 
     <p>
     <div class='canvas'></div>
@@ -74,44 +74,62 @@ div.container {
     upgrade = document.getElementById('upgrade');
 
     function create_cropper(evt){
-        if (evt.target.files.length) {
-            const reader = new FileReader();
-            reader.onload = create_cropper => {
-                if (create_cropper.target.result){
-                    let img = document.createElement('img');
-                    img.id = 'image';
-                    img.src = create_cropper.target.result;
-                    canvas.innerHTML = '';
-                    canvas.appendChild(img);
-                    cropper = new Cropper(img, {
-                        autoCropArea: 1,
-                        viewMode: 1,
-                        zoomable: false
-                    });
-                };
-            };
-            reader.readAsDataURL(evt.target.files[0]);
+        const allowed = ['jpeg', 'jpg', 'png', 'gif'], name = file.files[0].name;
+        const extension = name.split('.').pop();
+        if (!allowed.includes(extension)){
+            alert('File has to be .jpeg, .jpg, .png, or .gif');
+            file.value = '';
+            return;
         };
+
+        const reader = new FileReader();
+        reader.onload = create_cropper => {
+            let img = document.createElement('img');
+            img.id = 'image';
+            img.src = create_cropper.target.result;
+            canvas.innerHTML = '';
+            canvas.appendChild(img);
+            cropper = new Cropper(img, {
+                autoCropArea: 1,
+                viewMode: 1
+            });
+        };
+        reader.readAsDataURL(evt.target.files[0]);
     };
     file.addEventListener('change', create_cropper);
 
 
-    function crop(){        
-        cropper.getCroppedCanvas().toBlob((blob) => {
-            const name = file.files[0].name;
-            cropped = new File([blob], name);
+    async function crop(){
+        const crop_box = cropper.cropBox;
+        const w = crop_box.clientWidth, h = crop_box.clientHeight;
+        const mx = Math.max(w, h);
 
-            let container = new DataTransfer();
-            container.items.add(cropped);
-            file.files = container.files;
-        });
+        if (800 < mx){
+            alert('The cropped area is too large, please shrink it');
+            return false;
+        };
+
+        const canvas = cropper.getCroppedCanvas();
+        const blob = await new Promise(resolve => canvas.toBlob(resolve));
+
+        const name = file.files[0].name;
+        const cropped = new File([blob], name);
+
+        let container = new DataTransfer();
+        container.items.add(cropped);
+        file.files = container.files;
+        return true;
     };
+
     function submit(){
         document.getElementById('form').submit();
     };
-    function crop_submit(){
-        crop();
-        setTimeout(submit, 200);
+
+    async function crop_submit(){
+        const f = await crop();
+        if (f){
+            submit();
+        };
     };
     upgrade.addEventListener('click', crop_submit);
 </script>
