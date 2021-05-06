@@ -74,6 +74,7 @@ div.container {
     upgrade = document.getElementById('upgrade');
 
     function create_cropper(evt){
+        /*
         const allowed = ['jpeg', 'jpg', 'png', 'gif'], name = file.files[0].name;
         const extension = name.split('.').pop();
         if (!allowed.includes(extension)){
@@ -81,7 +82,7 @@ div.container {
             file.value = '';
             return;
         };
-
+        */
         const reader = new FileReader();
         reader.onload = create_cropper => {
             let img = document.createElement('img');
@@ -100,6 +101,7 @@ div.container {
 
 
     function crop(){
+        /*
         const crop_box = cropper.cropBox;
         const w = crop_box.clientWidth, h = crop_box.clientHeight;
         const mx = Math.max(w, h);
@@ -108,6 +110,7 @@ div.container {
             alert('The cropped area is too large, please shrink it');
             return false;
         };
+        */
 
         cropper.getCroppedCanvas().toBlob((blob) => {
             const name = file.files[0].name;
