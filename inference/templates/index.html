@@ -37,31 +37,29 @@ div.container {
 
 <h1 class='header'>Image 2.0</h1>
 
-<form method='post' action='/' enctype='multipart/form-data' id='form'>
-    <input class='setting' type='file' name='file' style="margin-left: 110px" accept='image/*' required>
+<input class='setting' type='file' id='file' style="margin-left: 110px" accept='image/*' required>
 
-    <p>
-    <div class='canvas'></div>
-    </p>
+<p>
+    <div id='canvas'></div>
+</p>
 
-    <p>
-        <label class='setting'>Enhancement level:</label>
-        <select name='enhancement_level'>
-            <option value=1>1 (Very low)</option>
-            <option value=2>2</option>
-            <option value=3 selected='selected'>3</option>
-            <option value=4>4</option>
-            <option value=5>5 (Very high)</option>
-        </select>
-    </p>
+<p>
+    <label class='setting'>Enhancement level:</label>
+    <select id='enhancement_level'>
+        <option value=1>1 (Very low)</option>
+        <option value=2>2</option>
+        <option value=3 selected='selected'>3</option>
+        <option value=4>4</option>
+        <option value=5>5 (Very high)</option>
+    </select>
+</p>
 
-    <p>
-        <label>
-            <input type='checkbox' checked='checked' name='enlarge'>
-            <span class='setting'>Enlarge</span>
-        </label>
-    </p>
-</form>
+<p>
+    <label>
+        <input type='checkbox' checked='checked' id='enlarge'>
+        <span class='setting'>Enlarge</span>
+    </label>
+</p>
 
 <p>
     <input type='button' value='Upgrade' id='upgrade'>
@@ -69,13 +67,14 @@ div.container {
 <br>
 
 <script>
-    let file = document.getElementsByName('file')[0],
-    canvas = document.getElementsByClassName('canvas')[0],
+    let file = document.getElementById('file'),
+    canvas = document.getElementById('canvas'),
     upgrade = document.getElementById('upgrade');
 
     function create_cropper(evt){
         const allowed = ['jpeg', 'jpg', 'png', 'gif'], name = file.files[0].name;
         const extension = name.split('.').pop();
+
         if (!allowed.includes(extension)){
             alert('File has to be .jpeg, .jpg, .png, or .gif');
             file.value = '';
@@ -87,8 +86,10 @@ div.container {
             let img = document.createElement('img');
             img.id = 'image';
             img.src = create_cropper.target.result;
+
             canvas.innerHTML = '';
             canvas.appendChild(img);
+            
             cropper = new Cropper(img, {
                 autoCropArea: 1,
                 viewMode: 1
@@ -99,39 +100,29 @@ div.container {
     file.addEventListener('change', create_cropper);
 
 
-    async function crop(){
+    function submit(){
         const crop_box = cropper.cropBox;
         const w = crop_box.clientWidth, h = crop_box.clientHeight;
         const mx = Math.max(w, h);
 
         if (800 < mx){
             alert('The cropped area is too large, please shrink it');
-            return false;
+            return;
         };
 
-        const canvas = cropper.getCroppedCanvas();
-        const blob = await new Promise(resolve => canvas.toBlob(resolve));
+        const cropped_canvas = cropper.getCroppedCanvas();
+        let b64 = cropped_canvas.toDataURL();
+        b64 = b64.split(',')[1];
 
-        const name = file.files[0].name;
-        const cropped = new File([blob], name);
+        let enhancement_level = document.getElementById('enhancement_level');
+        enhancement_level = enhancement_level.selectedIndex+1;
 
-        let container = new DataTransfer();
-        container.items.add(cropped);
-        file.files = container.files;
-        return true;
+        const enlarge = document.getElementById('enlarge').checked;
+
+        data = {file: b64, enhancement_level: enhancement_level, enlarge: enlarge}
+        $.post( '/', data);
     };
-
-    function submit(){
-        document.getElementById('form').submit();
-    };
-
-    async function crop_submit(){
-        const f = await crop();
-        if (f){
-            submit();
-        };
-    };
-    upgrade.addEventListener('click', crop_submit);
+    upgrade.addEventListener('click', submit);
 </script>
 
 

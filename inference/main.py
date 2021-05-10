@@ -26,7 +26,7 @@ def upload():
     res, img = compare(model, img, enhancement_level, 
                        enlarge, device)
     collect()
-
+    print(res.size, res, img, img.size)
     res = img_to_b64(res)
     img = img_to_b64(img)
     return render_template('index.html', img=img, res=res)

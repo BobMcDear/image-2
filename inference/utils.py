@@ -1,4 +1,4 @@
-from base64 import b64encode
+from base64 import b64decode, b64encode
 from io import BytesIO
 
 from numpy import array, moveaxis, uint8
@@ -17,6 +17,12 @@ def torch_to_img(a):
     a = torch_to_np(a)
     a = Image.fromarray(a)
     return a
+
+
+def b64_to_img(b64):
+    b64 = BytesIO(b64decode(b64))
+    img = Image.open(b64).convert('RGB')
+    return img
 
 
 def img_to_b64(img):

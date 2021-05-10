@@ -1,12 +1,11 @@
 from flask import request
-from PIL import Image
+
+from utils import b64_to_img
 
 
 def get_input():
-    f = request.files['file']
-    img = Image.open(f).convert('RGB')
-
+    f = request.form['file']
+    img = b64_to_img(f)
     enhancement_level = int(request.form['enhancement_level'])
-    enlarge = request.form.get('enlarge')
-    inp = (img, enhancement_level, enlarge)
-    return inp
+    enlarge = (request.form['enlarge'] == 'true')
+    return img, enhancement_level, enlarge
