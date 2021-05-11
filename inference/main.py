@@ -23,13 +23,14 @@ def upload():
     img, enhancement_level, enlarge = get_input()
     model = load_model().to(device)
 
-    res, img = compare(model, img, enhancement_level, 
+    res, img = compare(model, img, enhancement_level,
                        enlarge, device)
     collect()
-    print(res.size, res, img, img.size)
+
     res = img_to_b64(res)
     img = img_to_b64(img)
-    return render_template('index.html', img=img, res=res)
+    out = {'res': res, 'img': img}
+    return out
 
 
 if __name__ == "__main__":

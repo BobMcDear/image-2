@@ -99,45 +99,60 @@ div.container {
     };
     file.addEventListener('change', create_cropper);
 
+    function submit(evt){
+        upgrade.disabled = true;
 
-    function submit(){
         const crop_box = cropper.cropBox;
         const w = crop_box.clientWidth, h = crop_box.clientHeight;
         const mx = Math.max(w, h);
 
         if (800 < mx){
             alert('The cropped area is too large, please shrink it');
-            return;
+        }
+
+        else{
+            const cropped_canvas = cropper.getCroppedCanvas();
+            let b64 = cropped_canvas.toDataURL();
+            b64 = b64.split(',')[1];
+
+            let enhancement_level = document.getElementById('enhancement_level');
+            enhancement_level = enhancement_level.selectedIndex+1;
+
+            const enlarge = document.getElementById('enlarge').checked;
+
+            data = {file: b64, enhancement_level: enhancement_level, enlarge: enlarge};
+
+            function success(response){
+                const img = response.img, res = response.res
+                let original = document.getElementById('original'), upgraded = document.getElementById('upgraded');
+
+                original.src = 'data:image/png;base64,'+img;
+                upgraded.src = 'data:image/png;base64,'+res;
+
+                let containers = document.getElementsByClassName('container');
+                for (const container of containers) {
+                    container.removeAttribute('hidden');
+                };
+            };
+
+            $.ajax({type: 'POST', url: '/', data: data,
+                    success: success, async: false});
         };
 
-        const cropped_canvas = cropper.getCroppedCanvas();
-        let b64 = cropped_canvas.toDataURL();
-        b64 = b64.split(',')[1];
-
-        let enhancement_level = document.getElementById('enhancement_level');
-        enhancement_level = enhancement_level.selectedIndex+1;
-
-        const enlarge = document.getElementById('enlarge').checked;
-
-        data = {file: b64, enhancement_level: enhancement_level, enlarge: enlarge}
-        $.post( '/', data);
+        upgrade.disabled = false;
     };
     upgrade.addEventListener('click', submit);
 </script>
 
 
-<div class='container'>
-    {% if img %}
-        <p>Original</p>
-        <img src='data:image/jpeg;base64,{{ img }}'>
-    {% endif %}
+<div class='container' hidden>
+    <p>Original</p>
+    <img id='original'>
 </div>
 
 <br>
 
-<div class='container'>
-    {% if res %}
-        <p>Upgraded</p>
-        <img src='data:image/jpeg;base64,{{ res }}'>
-    {% endif %}
+<div class='container' hidden>
+    <p>Upgraded</p>
+    <img id='upgraded'>
 </div>
