@@ -25,8 +25,14 @@ div.container {
 	font-weight: 1000;
 }
 
+.progress {
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+}
+
 .setting {
-	font-weight: 400;
+	font-weight: 600;
 }
 </style>
 
@@ -37,7 +43,7 @@ div.container {
 
 <h1 class='header'>Image 2.0</h1>
 
-<input class='setting' type='file' id='file' style="margin-left: 110px" accept='image/*' required>
+<input type='file' id='file' style="margin-left: 110px" accept='image/*' required>
 
 <p>
     <div id='canvas'></div>
@@ -64,6 +70,10 @@ div.container {
 <p>
     <input type='button' value='Upgrade' id='upgrade'>
 </p>
+
+<p class='progress' hidden>
+    Upgrading...
+</p>
 <br>
 
 <script>
@@ -79,6 +89,11 @@ div.container {
             alert('File has to be .jpeg, .jpg, .png, or .gif');
             file.value = '';
             return;
+        };
+
+        let containers = document.getElementsByClassName('container');
+        for (const container of containers) {
+            container.setAttribute('hidden', true);
         };
 
         const reader = new FileReader();
@@ -99,47 +114,54 @@ div.container {
     };
     file.addEventListener('change', create_cropper);
 
-    function submit(evt){
-        upgrade.disabled = true;
+    function submit(){
+        if (!jQuery.active){
+            const crop_box = cropper.cropBox;
+            const w = crop_box.clientWidth, h = crop_box.clientHeight;
+            const mx = Math.max(w, h);
 
-        const crop_box = cropper.cropBox;
-        const w = crop_box.clientWidth, h = crop_box.clientHeight;
-        const mx = Math.max(w, h);
+            if (800 < mx){
+                alert('The cropped area is too large, please shrink it');
+            }
 
-        if (800 < mx){
-            alert('The cropped area is too large, please shrink it');
-        }
-
-        else{
-            const cropped_canvas = cropper.getCroppedCanvas();
-            let b64 = cropped_canvas.toDataURL();
-            b64 = b64.split(',')[1];
-
-            let enhancement_level = document.getElementById('enhancement_level');
-            enhancement_level = enhancement_level.selectedIndex+1;
-
-            const enlarge = document.getElementById('enlarge').checked;
-
-            data = {file: b64, enhancement_level: enhancement_level, enlarge: enlarge};
-
-            function success(response){
-                const img = response.img, res = response.res
-                let original = document.getElementById('original'), upgraded = document.getElementById('upgraded');
-
-                original.src = 'data:image/png;base64,'+img;
-                upgraded.src = 'data:image/png;base64,'+res;
-
+            else{
                 let containers = document.getElementsByClassName('container');
                 for (const container of containers) {
-                    container.removeAttribute('hidden');
+                    container.setAttribute('hidden', true);
                 };
+
+                let progress = document.getElementsByClassName('progress')[0];
+                progress.removeAttribute('hidden');
+
+                const cropped_canvas = cropper.getCroppedCanvas();
+                let b64 = cropped_canvas.toDataURL();
+                b64 = b64.split(',')[1];
+
+                let enhancement_level = document.getElementById('enhancement_level');
+                enhancement_level = enhancement_level.selectedIndex+1;
+
+                const enlarge = document.getElementById('enlarge').checked;
+
+                data = {file: b64, enhancement_level: enhancement_level, enlarge: enlarge};
+
+                function success(response){
+                    progress.setAttribute('hidden', true);
+
+                    const img = response.img, res = response.res;
+                    let original = document.getElementById('original'), upgraded = document.getElementById('upgraded');
+
+                    original.src = 'data:image/png;base64,'+img;
+                    upgraded.src = 'data:image/png;base64,'+res;
+
+                    for (const container of containers) {
+                        container.removeAttribute('hidden');
+                    };
+                };
+
+                $.ajax({type: 'POST', url: '/', data: data,
+                        success: success});
             };
-
-            $.ajax({type: 'POST', url: '/', data: data,
-                    success: success, async: false});
         };
-
-        upgrade.disabled = false;
     };
     upgrade.addEventListener('click', submit);
 </script>
