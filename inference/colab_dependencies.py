@@ -1,4 +1,4 @@
-from os import chdir, system
+from os import system
 
 from gdown import download
 
