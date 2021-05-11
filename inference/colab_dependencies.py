@@ -20,7 +20,6 @@ def download_model():
 
 def main():
     install_libraries()
-    chdir('Image-2.0/inference')
     system('mkdir models/')
     download_model()
 
