@@ -3,35 +3,40 @@
 <title>Image 2.0</title>
 
 <style>
-body {
+body{
 	background-color: #14151b;
 	color: #072c66;
 	font-family: 'Helvetica';
 	text-align: center;
 }
 
-.canvas {
-    margin: auto;
-    max-height: 1024px;
-    max-width: 1024px;
+.canvas{
+    margin: 0 auto;
+    max-width: 512px;
+    max-height: 512px;
 }
 
-div.container {
+div.container{
 	font-weight: 800;
 }
 
-.header {
+.header{
 	font-size: 40px;
 	font-weight: 1000;
 }
 
-.progress {
+img{
+  display: block;
+  max-width: 100%;
+}
+
+.progress{
     color: white;
     font-size: 20px;
     font-weight: 800;
 }
 
-.setting {
+.setting{
 	font-weight: 600;
 }
 </style>
@@ -45,10 +50,10 @@ div.container {
 
 <h1 class='header'>Image 2.0</h1>
 
-<input type='file' id='file' style="margin-left: 110px" accept='image/*' required>
+<input type='file' id='file' style='margin-left: 110px' accept='image/*' required>
 
 <p>
-    <div id='canvas'></div>
+    <div class='canvas'></div>
 </p>
 
 <p>
@@ -80,7 +85,7 @@ div.container {
 
 <script>
     let file = document.getElementById('file'),
-    canvas = document.getElementById('canvas'),
+    canvas = document.getElementsByClassName('canvas')[0],
     upgrade = document.getElementById('upgrade');
 
     function create_cropper(evt){
@@ -94,7 +99,7 @@ div.container {
         };
 
         let containers = document.getElementsByClassName('container');
-        for (const container of containers) {
+        for (const container of containers){
             container.setAttribute('hidden', true);
         };
 
@@ -109,7 +114,7 @@ div.container {
             
             cropper = new Cropper(img, {
                 autoCropArea: 1,
-                viewMode: 1
+                viewMode: 1,
             });
         };
         reader.readAsDataURL(evt.target.files[0]);
@@ -118,51 +123,57 @@ div.container {
 
     function submit(){
         if (!jQuery.active){
-            const crop_box = cropper.cropBox;
-            const w = crop_box.clientWidth, h = crop_box.clientHeight;
-            const mx = Math.max(w, h);
+            const cropped_canvas = cropper.getCroppedCanvas();
+            let b64 = cropped_canvas.toDataURL();
 
-            if (800 < mx){
-                alert('The cropped area is too large, please shrink it');
-            }
+            let i = new Image();
+            i.onload = function(){
+                const height = i.height, width = i.width;
 
-            else{
-                let containers = document.getElementsByClassName('container');
-                for (const container of containers) {
-                    container.setAttribute('hidden', true);
-                };
+                console.log(height, width)
+                const mx = Math.max(height, width);
 
-                let progress = document.getElementsByClassName('progress')[0];
-                progress.removeAttribute('hidden');
+                if (800 < mx){
+                    alert('The cropped area is too large, please shrink it');
+                }
 
-                const cropped_canvas = cropper.getCroppedCanvas();
-                let b64 = cropped_canvas.toDataURL();
-                b64 = b64.split(',')[1];
-
-                let enhancement_level = document.getElementById('enhancement_level');
-                enhancement_level = enhancement_level.selectedIndex+1;
-
-                const enlarge = document.getElementById('enlarge').checked;
-
-                data = {file: b64, enhancement_level: enhancement_level, enlarge: enlarge};
-
-                function success(response){
-                    progress.setAttribute('hidden', true);
-
-                    const img = response.img, res = response.res;
-                    let original = document.getElementById('original'), upgraded = document.getElementById('upgraded');
-
-                    original.src = 'data:image/png;base64,'+img;
-                    upgraded.src = 'data:image/png;base64,'+res;
-
-                    for (const container of containers) {
-                        container.removeAttribute('hidden');
+                else{
+                    let containers = document.getElementsByClassName('container');
+                    for (const container of containers){
+                        container.setAttribute('hidden', true);
                     };
-                };
 
-                $.ajax({type: 'POST', url: '/', data: data,
-                        success: success});
+                    let progress = document.getElementsByClassName('progress')[0];
+                    progress.removeAttribute('hidden');
+
+                    b64 = b64.split(',')[1];
+
+                    let enhancement_level = document.getElementById('enhancement_level');
+                    enhancement_level = enhancement_level.selectedIndex+1;
+
+                    const enlarge = document.getElementById('enlarge').checked;
+
+                    data = {file: b64, enhancement_level: enhancement_level, enlarge: enlarge};
+
+                    function success(response){
+                        progress.setAttribute('hidden', true);
+
+                        const img = response.img, res = response.res;
+                        let original = document.getElementById('original'), upgraded = document.getElementById('upgraded');
+
+                        original.src = 'data:image/png;base64,'+img;
+                        upgraded.src = 'data:image/png;base64,'+res;
+
+                        for (const container of containers){
+                            container.removeAttribute('hidden');
+                        };
+                    };
+
+                    $.ajax({type: 'POST', url: '/', data: data,
+                            success: success});
+                };
             };
+            i.src = b64;
         };
     };
     upgrade.addEventListener('click', submit);
