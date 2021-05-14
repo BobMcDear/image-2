@@ -20,7 +20,7 @@ The steps are as follows:
 `fnames.csv` must include the names of the images in column `fnames`, and a binary column `is_val` that says whether a specific file belongs to the validation set or not.
 
 
-Most the bits and pieces may be used separately in your own projects. Some you may find useful are:
+Most the bits and pieces may be used separately in your own projects. Some you might find useful are:
 
 * `training/degrader.py`:
 
