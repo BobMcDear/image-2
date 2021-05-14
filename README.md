@@ -17,20 +17,20 @@ The steps are as follows:
 2. Degrade them: `python training/degrader.py --path resized/ --degraded_path degraded/`
 3. Train: `python training/main.py --df fnames.csv --path resized/ --degraded_path degraded/ --bs 8 --model_name ecaresnet101d_pruned --frozen_epochs 10 --unfrozen_epochs 10`
 
-* `fnames.csv` must include the names of the images in column `fnames`, and a binary column `is_val` that says whether a specific file belongs to the validation set or not.
+`fnames.csv` must include the names of the images in column `fnames`, and a binary column `is_val` that says whether a specific file belongs to the validation set or not.
 
 
 Most the bits and pieces may be used separately in your own projects. Some you may find useful are:
 
-* `degrader.py`:
+* `training/degrader.py`:
 
   `Degrader`: Stand-alone transform for degrading (downscale then upscale, add artifacts, blur, and adjust color, contrast, and brightness) an image. No arguments. Call it on your images, and it returns the degraded version.
   
-* `loss.py`:
+* `training/loss.py`:
 
   `PerceptualLossVGG16`: Perceptual loss with VGG16. No arguments. Call it on your predictions & targets (both in the shape of (*bs, n_channels, w, h*)), and it returns the loss.
   
-* `model.py`:
+* `training/model.py`:
 
   `get_unet`: Returns an fp16 U-Net Learner with settings I've found to work well. Required argument: `dls` (fastai DataLoaders), Optional argument: `model_name` (name of model to be used as the U-Net's encoder. Needs to belong to the ResNet family. List of available models [here](https://github.com/rwightman/pytorch-image-models). Default is `swsl_resnet18`)
   
@@ -39,16 +39,29 @@ Most the bits and pieces may be used separately in your own projects. Some you m
 
 For inference, there are a number of functions & methods to make life easier:
 
-* `model.py`
+* `inference/model.py`
 
-`load_model`: Returns a model with a method `.predict` that takes in an image (required) and a device (optional, default CUDA), and returns the enhanced version (no need for normalizing, float to int tensor, etc.). Optional argument: `path` (path to a pretrained model (like the PyTorch one linked in the description) to load. Default is `models/model.pt`).
+  `load_model`: Returns a model with a method `.predict` that takes in an image (required) and a device (optional, default CUDA), and returns the enhanced version (no need for normalizing, float to int tensor, etc.). 
+  
+  Optional argument: `path` (path to a pretrained model (like the PyTorch one linked in the description) to load. Default is `models/model.pt`).
 
-* `upgrade.py`
+* `inference/upgrade.py`
 
-`predict`: Returns an enhanced/enlarged version of an image with repeated predicting (96 X 96 --> 128 X 128 --> enhance --> 224 X 224 --> enhance --> .... More info in the blog series). Required arguments: `model` (model outputted by `load_model`), `img` (image to enhance). Optional arguments: `scale_factor` (upscale factor for enlargement. Default is 2), `enhancement_level` (number of iterations for repeated predicting. Default is 2), `enhance_first` (whether to enhance the image once before we start enlargement. Default is false), `device` (what device to run the prediction on. Default is CPU)
+  `predict`: Returns an enhanced/enlarged version of an image with repeated predicting (96 X 96 --> 128 X 128 --> enhance --> 224 X 224 --> enhance --> .... More info in the blog series). 
+  
+  Required arguments: `model` (model outputted by `load_model`), `img` (image to enhance). 
+  
+  Optional arguments: `scale_factor` (upscale factor for enlargement. Default is 2), `enhancement_level` (number of iterations for repeated predicting. Default is 2), `enhance_first` (whether to enhance the image once before we start enlargement. Default is false), `device` (what device to run the prediction on. Default is CPU)
 
-`find_scale_factor`: Returns a recommendation for the scale factor, derived via a simple set of heuristics. Required argument: `img` (image to find a scale factor for), Optional argument: `enlarge` (if false, the function invariably returns one. Default is true)
+  `find_scale_factor`: Returns a recommendation for the scale factor, derived via a simple set of heuristics. 
+  
+  Required argument: `img` (image to find a scale factor for), 
+  
+  Optional argument: `enlarge` (if false, the function invariably returns one. Default is true)
 
-`upgrade`: Returns an enhance/enlarged version of an image with repeated predicting. It is just like `predict`, but it uses `find_scale_factor` to find a suitable scale factor (and thus no need to pass in a scale factor).
+  `upgrade`: Returns an enhance/enlarged version of an image with repeated predicting. It is just like `predict`, but it uses `find_scale_factor` to find a suitable scale factor (and thus no need to pass in a scale factor).
 
-`compare`: Returns 
+  `compare`: Returns an enhanced/enlarged version of an image, alongside what it would look like with no enhancement (useful for enlargement). The arguments are just like `upgrade`.
+
+
+If you'd like to check out the web app, please run `inference/main.py`.
