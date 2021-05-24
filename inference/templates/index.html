@@ -89,7 +89,7 @@ img{
     canvas = document.getElementsByClassName('canvas')[0],
     upgrade = document.getElementById('upgrade');
 
-    function create_cropper(evt){
+    function create_cropper(){
         const allowed = ['jpeg', 'jpg', 'png', 'gif'], name = file.files[0].name;
         const extension = name.split('.').pop();
 
@@ -118,7 +118,7 @@ img{
                 viewMode: 1
             });
         };
-        reader.readAsDataURL(evt.target.files[0]);
+        reader.readAsDataURL(file.files[0]);
     };
     file.addEventListener('change', create_cropper);
 
