@@ -2,7 +2,7 @@ from PIL import Image
 
 
 def predict(model, img, scale_factor=2,
-            enhancement_level=2, enhance_first=False,
+            enhancement_level=3, enhance_first=False,
             device='cpu'):
     f = scale_factor ** (1 / enhancement_level)
     res = img
