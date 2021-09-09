@@ -19,6 +19,7 @@ The steps are as follows:
 
 `fnames.csv` must have a column named `fnames` containing the path to each image and a binary column `is_val` that says whether a specific file belongs to the validation set or not.
 
+## Usage
 
 Most the bits and pieces may be used separately in your own projects. Some you may find useful are:
 
@@ -38,8 +39,6 @@ Most the bits and pieces may be used separately in your own projects. Some you m
       
       Optional argument: `model_name` (name of model to be used as the U-Net's encoder. Needs to belong to the ResNet family. List of available models [here](https://github.com/rwightman/pytorch-image-models). Default is `swsl_resnet18`)
   
-
-## Inference
 
 For inference, there are a number of functions & methods to make life easier:
 
