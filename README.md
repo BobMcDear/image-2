@@ -4,9 +4,7 @@
 
 ## Description
 
-Image 2.0 is a project with one simple purpose: Enhance & enlarge any photo with little to no input from the user, thereby reducing any confusion regarding different settings, sizes, and so on. It is powered by deep learning, specifically a U-Net trained with perceptual loss on the Common Objects in Context dataset (COCO). I have deployed a demo web app to a [Colab notebook](https://colab.research.google.com/drive/1rRbQcBL7AUy74Rr4_CtXhikoAQ2xriaF), which takes in an image and gives back the enhanced/enlarged version with a mere few clicks.
-
-More details regarding the whys & hows are covered in [the accompanying blog series](https://medium.datadriveninvestor.com/enhancing-photos-with-deep-learning-part-1-an-overview-80f2dcb96849) I wrote. The trained [fastai Learner](https://drive.google.com/file/d/1mZsspP11fWd2VYhRJn0JlHtro7S0Jvx3/view?usp=sharing) and [PyTorch model](https://drive.google.com/file/d/1SVxl-UjFZXDoZu2h0yZadkErOruEfiwl/view?usp=sharing) can be found on Google Drive.
+Image 2.0 is a project with one simple purpose: Enhance & enlarge any photo with little to no input from the user, thereby reducing any confusion regarding different settings, sizes, and so on. It is powered by deep learning, specifically a U-Net trained with perceptual loss on the Common Objects in Context dataset (COCO). I have deployed a demo web app to a [Colab notebook](https://colab.research.google.com/drive/1rRbQcBL7AUy74Rr4_CtXhikoAQ2xriaF), which takes in an image and gives back the enhanced/enlarged version with a mere few clicks. The trained [fastai Learner](https://drive.google.com/file/d/1mZsspP11fWd2VYhRJn0JlHtro7S0Jvx3/view?usp=sharing) and [PyTorch model](https://drive.google.com/file/d/1SVxl-UjFZXDoZu2h0yZadkErOruEfiwl/view?usp=sharing) can be found on Google Drive.
 
 
 ## Training
